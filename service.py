@@ -10,16 +10,21 @@ _HOST_ = 'http://10.240.232.7'
 _PROM_PORT_ = '9090'
 _ES_PORT_ = '9200'
 
-class Prom(Resource):
-  def get(self):
-    query = '(sum(node_memory_MemTotal_bytes{instance=~"node-exporter:9100"}) - sum(node_memory_MemFree_bytes{instance=~"node-exporter:9100"}+node_memory_Buffers_bytes{instance=~"node-exporter:9100"}+node_memory_Cached_bytes{instance=~"node-exporter:9100"}) ) / sum(node_memory_MemTotal_bytes{instance=~"node-exporter:9100"}) * 100'
-    safe = '()_-&~*'
-    start = '1553053590'
-    end = '1553057220'
-    step = '30'
-    url = _HOST_ + ':' + _PROM_PORT_ + '/api/v1/query_range?query=' + urllib.parse.quote(query, safe=safe) + '&start=' + start + '&end=' + end + '&step=' + step
-    r = requests.get(url)
-    return jsonify(r.text)
+class PromQuery:
+  safe_chars = '()_-&~*'
+  
+  memory = '(sum(node_memory_MemTotal_bytes{instance=~"node-exporter:9100"})' \
+    '- sum(node_memory_MemFree_bytes{instance=~"node-exporter:9100"}' \
+      '+node_memory_Buffers_bytes{instance=~"node-exporter:9100"}' \
+        '+node_memory_Cached_bytes{instance=~"node-exporter:9100"}) )' \
+          '/ sum(node_memory_MemTotal_bytes{instance=~"node-exporter:9100"}) * 100'
+  
+  cpu = '100 - (avg  (irate(node_cpu_seconds_total' \
+    '{mode="idle",instance=~"node-exporter.*"}[1m])) * 100)'
+  
+  filesystem_usage = 'sum (container_fs_limit_bytes{instance=~"cadvisor:8080"}' \
+    '- container_fs_usage_bytes{instance=~"cadvisor:8080"})' \
+      '/ sum(container_fs_limit_bytes{instance=~"cadvisor:8080"})'
 
 class Log(Resource):
   def get(self, spanid):
