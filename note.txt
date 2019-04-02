@@ -1,0 +1,22 @@
+Flow:
+
+Client requests --> Get span_info --> Check cache with traceid --Fail-> Get Metrics, Logs based on traceid --> Response
+                                                  |                                  |         
+                                               OK |                                  |
+                                                  |                                  |
+                                              Response                       Add info to Cache
+
+
+Response data model:
+
+{
+  'data':
+  'error':
+  'message':
+}
+
+
+Cache data model:
+
+<traceid>-'metrics'-<metrics_name>-<host_ip> : <data>
+<traceid>-<spanid>-'logs' : <data>
