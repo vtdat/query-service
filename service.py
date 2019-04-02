@@ -161,31 +161,31 @@ Get Span start_time and end_time from spanid
 """
 def get_span_info(spanid):
   url = HOST + ':' + ES_PORT + '/jaeger-*/_search?q=spanID:' + spanid
-  # try:
-  r = json.loads(requests.get(url).text)
-  if r['hits']['total'] > 0:
+  try:
+    r = json.loads(requests.get(url).text)
+    if r['hits']['total'] > 0:
+      return json.dumps({
+        'error' : 0,
+        'message' : 'OK',
+        'data' : {
+          'isRoot' : r['hits']['hits'][0]['_source']['spanID'] == \
+            r['hits']['hits'][0]['_source']['traceID'],
+          'traceid' : r['hits']['hits'][0]['_source']['traceID'],
+          'host_ip' : r['hits']['hits'][0]['_source']['process']['tags'][2]['value'],
+          'start_time' : r['hits']['hits'][0]['_source']['startTimeMillis'],
+          'end_time' :  r['hits']['hits'][0]['_source']['startTimeMillis'] \
+            + r['hits']['hits'][0]['_source']['duration']
+        }
+      })
     return json.dumps({
-      'error' : 0,
-      'message' : 'OK',
-      'data' : {
-        'isRoot' : r['hits']['hits'][0]['_source']['spanID'] == \
-          r['hits']['hits'][0]['_source']['traceID'],
-        'traceid' : r['hits']['hits'][0]['_source']['traceID'],
-        'host_ip' : r['hits']['hits'][0]['_source']['process']['tags'][2]['value'],
-        'start_time' : r['hits']['hits'][0]['_source']['startTimeMillis'],
-        'end_time' :  r['hits']['hits'][0]['_source']['startTimeMillis'] \
-          + r['hits']['hits'][0]['_source']['duration']
-      }
+      'error' : 1,
+      'message' : 'Span not found'
     })
-  return json.dumps({
-    'error' : 1,
-    'message' : 'Span not found'
-  })
-  # except:
-  #   return json.dumps({
-  #     'error' : 1,
-  #     'message' : 'There was an error'
-  #   })
+  except:
+    return json.dumps({
+      'error' : 1,
+      'message' : 'There was an error'
+    })
 
 def set_to_cache(key, value):
   rd.set(key, value, nx=True, ex=900) # set expiration time to 15mins
