@@ -33,11 +33,7 @@ class PromQuery:
           '/ sum(node_memory_MemTotal_bytes{{instance=~"{0}:9100"}}) * 100'
 
   cpu = '100 - (avg  (irate(node_cpu_seconds_total' \
-    '{{mode="idle",instance=~"{0}.*"}}[1m])) * 100)'
-  
-  filesystem_usage = 'sum (container_fs_limit_bytes{{instance=~"{0}:8080"}}' \
-    '- container_fs_usage_bytes{{instance=~"{0}:8080"}})' \
-      '/ sum(container_fs_limit_bytes{{instance=~"{0}:8080"}})'
+    '{{mode="idle",instance=~"{0}:9100"}}[2m])) * 100)'
 
 """
 Getting logs from ElasticSearch.
