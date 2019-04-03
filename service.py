@@ -115,7 +115,7 @@ class Prom(Resource):
       if data_from_cache:
         return jsonify({
             'error' : 0,
-            'data' : data_from_cache,
+            'data' : json.loads(data_from_cache),
             'message' : 'Records retrieved'
           })
 
@@ -133,10 +133,10 @@ class Prom(Resource):
         r = json.loads(requests.get(url, auth=HTTPBasicAuth('admin', 'QwPnMAEGNVVaN5OinDikz8ilYRfJvUmY9dAaYqTy')).text)
         if r['status'] == 'success':
           set_to_cache(form_metric_key(span_info['traceid'], metric_name, span_info['host_ip']),\
-            json.dumps([r['data']['result'][0]['values']]))
+            json.dumps(r['data']['result'][0]['values']))
           return jsonify({
             'error' : 0,
-            'data' : [r['data']['result'][0]['values']],
+            'data' : r['data']['result'][0]['values'],
             'message' : 'Records retrieved'
           })
         return jsonify({
