@@ -15,7 +15,7 @@ CORS(app)
 HOST = 'http://10.240.201.100'
 PROM_PORT = '9091'
 ES_PORT = '9200'
-rd = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+rd = redis.Redis(host='10.240.202.42', port=9379, db=0, decode_responses=True)
 
 """
 Define Prometheus query.
@@ -23,7 +23,7 @@ Define Prometheus query.
 
 class PromQuery:
   safe_chars = '()_-&~*'
-  time_gap = 900
+  time_gap = 2400
   step = '10'
 
   memory = '(sum(node_memory_MemTotal_bytes{{instance=~"{0}:9100"}})' \
