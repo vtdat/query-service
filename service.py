@@ -24,7 +24,7 @@ Define Prometheus query.
 class PromQuery:
   safe_chars = '()_-&~*'
   time_gap = 2400
-  step = '10'
+  step = '20'
 
   memory = '(sum(node_memory_MemTotal_bytes{{instance=~"{0}:9100"}})' \
     '- sum(node_memory_MemFree_bytes{{instance=~"{0}:9100"}}' \
@@ -140,8 +140,8 @@ class Prom(Resource):
             'message' : 'Records retrieved'
           })
         return jsonify({
-          'error' : 0,
-          'message' : 'No record found'
+          'error' : 1,
+          'message' : r['error']
         })
       except:
         return jsonify({
